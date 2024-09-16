@@ -3,7 +3,7 @@ import pandas as pd
 from datetime import datetime
 
 # Define the main directory containing the subfolders
-main_dir = '/Users/seggewa/Desktop/FeatherAnalysis'
+main_dir = '/Users/seggewa/Desktop/IsolationAnalysis'
 
 # Prepare a DataFrame to hold all the collected data
 master_data = pd.DataFrame()
@@ -20,7 +20,7 @@ for condition in os.listdir(main_dir):
                 df = pd.read_csv(file_path)
 
                 # Calculate total number of clusters
-                total_clusters = len(df['Cluster'].unique())
+                total_clusters = df.shape[0]  # This counts every row as a cluster instance
 
                 # Calculate average percentage of tracks in clusters
                 average_percentage = df['Percentage of Tracks in Clusters'].mean()

@@ -6,7 +6,7 @@ import numpy as np
 import os
 
 # Load the master CSV file
-master_csv_path = '/Users/seggewa/Desktop/FeatherAnalysis/ClusterInfo_20240731.csv'
+master_csv_path = '/Users/seggewa/Desktop/ClusterInfo-{datetime.now}.csv'
 data = pd.read_csv(master_csv_path)
 
 # Perform ANOVA separately for each metric if needed and prepare data for plotting
