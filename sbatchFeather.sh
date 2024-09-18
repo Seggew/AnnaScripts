@@ -3,11 +3,17 @@
 #SBATCH --output=cluster_analysis_%j.out # Output file
 #SBATCH --error=cluster_analysis_%j.err  # Error file
 #SBATCH --time=01:00:00                 # Time limit (HH:MM:SS)
-#SBATCH --mem=4G                        # Memory required
-#SBATCH --cpus-per-task=2               # Number of CPU cores
+#SBATCH --mem=40G                        # Memory required
+#SBATCH --cpus-per-task=16               # Number of CPU cores
+#SBATCH --partition=ncpu
+#SBATCH --mail-user=$(whoami)@crick.ac.uk
+#SBATCH --mail-type=FAIL
 
-# Load necessary modules (if any)
-module load python/3.x  # Ensure the appropriate Python module is loaded (adjust as needed)
 
-# Run the Python script from the directory where the sbatch script is located
+ml purge
+ml Anaconda3/2023.09-0
+source /camp/apps/eb/software/Anaconda/conda.env.sh
+
+conda activate analysis
+
 python cluster_analysis.py
