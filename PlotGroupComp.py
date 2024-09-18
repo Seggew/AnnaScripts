@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 
-
+#test line for git
 master_csv_path = '/Users/seggewa/Desktop/DensityAnalysis/ClusterInfo_20240916.csv'
 data = pd.read_csv(master_csv_path)
 
@@ -29,6 +29,7 @@ colors_clusters = '#B8CCC3'
 #bar plotting
 percentage_bars = ax.bar(positions - bar_width/2, average_percentages, bar_width, label='Average Percentage', color=colors_percentage)
 clusters_bars = ax.bar(positions + bar_width/2, total_clusters, bar_width, label='Total Clusters', color=colors_clusters)
+
 
 # Add individual data points
 for i, cond in enumerate(conditions):
