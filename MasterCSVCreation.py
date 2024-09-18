@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 from datetime import datetime
-
+#test line for git
 # Define the main directory containing the subfolders
 main_dir = '/Users/seggewa/Desktop/IsolationAnalysis'
 
