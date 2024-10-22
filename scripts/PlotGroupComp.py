@@ -4,7 +4,7 @@ import numpy as np
 import os
 
 #test line for git
-master_csv_path = '/Users/seggewa/Desktop/DensityAnalysis/ClusterInfo_20240916.csv'
+master_csv_path = '/Users/seggewa/Desktop/ClusterInfo_20240926.csv'
 data = pd.read_csv(master_csv_path)
 
 data['Condition_numeric'] = pd.to_numeric(data['Condition'], errors='coerce')

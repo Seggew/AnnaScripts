@@ -3,7 +3,7 @@ import pandas as pd
 from datetime import datetime
 #test line for git
 # Define the main directory containing the subfolders
-main_dir = '/Users/seggewa/Desktop/IsolationAnalysis'
+main_dir = '/Users/seggewa/Desktop/Density'
 
 # Prepare a DataFrame to hold all the collected data
 master_data = pd.DataFrame()
