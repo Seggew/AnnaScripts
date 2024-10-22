@@ -2,7 +2,7 @@
 #SBATCH --job-name=cluster_analysis     # Job name
 #SBATCH --output=cluster_analysis_%j.out # Output file
 #SBATCH --error=cluster_analysis_%j.err  # Error file
-#SBATCH --time=01:00:00                 # Time limit (HH:MM:SS)
+#SBATCH --time=15:00:00                 # Time limit (HH:MM:SS)
 #SBATCH --mem=40G                        # Memory required
 #SBATCH --cpus-per-task=16               # Number of CPU cores
 #SBATCH --partition=ncpu
@@ -16,4 +16,4 @@ source /camp/apps/eb/software/Anaconda/conda.env.sh
 
 conda activate analysis
 
-python cluster_analysis.py
+python FeatherAnalysisSLEAP.py
