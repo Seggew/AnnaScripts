@@ -2,10 +2,13 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.stats import ttest_ind
+from datetime import datetime
 import itertools
 
+date = datetime.today().strftime('%Y-%m-%d')
+
 # Path to the combined CSV file
-csv_file = '/Users/seggewa/Desktop/Length100000/combined_larva_data.csv'
+csv_file = 'data/Bodylength/combined_larva_data.csv'
 
 # Load the combined CSV file into a DataFrame
 df = pd.read_csv(csv_file)
@@ -63,4 +66,5 @@ for (cond1, cond2), p_value in p_values.items():
 
 # Show the plot
 plt.tight_layout()
-plt.show()
+plt.savefig(f'plots/{date}_BodyLengthMainCond.png', bbox_inches='tight', dpi=300)
+#plt.show()

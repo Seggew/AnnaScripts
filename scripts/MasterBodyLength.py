@@ -3,7 +3,7 @@ import os
 import pandas as pd
 
 # Folder A (replace with the actual path to your folder A)
-folder_a = '/Users/seggewa/Desktop/Length100000'
+folder_a = '/Users/seggewa/Desktop/Length'
 
 # List to store all the combined data
 combined_data = []
