@@ -20,5 +20,6 @@ plt.xticks(rotation=45, ha='right')
 
 # saving the plot, make sure it is in the same cell
 plt.savefig('plots/save.png', bbox_inches='tight', dpi=300)
+# save as pdf with magic settings to modify in Illustrator
 
 # %%
