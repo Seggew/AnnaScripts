@@ -7,7 +7,7 @@ def euclidean_distance(x1, y1, x2, y2):
     return np.sqrt((x2 - x1)**2 + (y2 - y1)**2)
 
 # Folder path containing Feather files (replace with your folder path)
-folder_path = '/Users/seggewa/Desktop/Length100000/200'
+folder_path = '/Users/seggewa/Desktop/Length/isolated'
 
 # List to store results
 results = []
