@@ -3,9 +3,9 @@ import numpy as np
 import os
 from PIL import Image
 
-frame_input_folder = '/Users/seggewa/Desktop/Visualisation/video_frames'
-plot_input_folder = '/Users/seggewa/Desktop/Visualisation/frames_png'
-output_folder = '/Users/seggewa/Desktop/Visualisation/overlay_frames'
+frame_input_folder = '/Users/seggewa/Desktop/cluster/video_frames'
+plot_input_folder = '/Users/seggewa/Desktop/cluster/frames_png'
+output_folder = '/Users/seggewa/Desktop/cluster/overlay_frames'
 os.makedirs(output_folder, exist_ok=True)
 
 for frame_file in os.listdir(frame_input_folder):
