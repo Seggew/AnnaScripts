@@ -1,0 +1,75 @@
+import pandas as pd
+from sklearn.cluster import DBSCAN
+import seaborn as sns
+import matplotlib.pyplot as plt
+import os
+import numpy as np
+
+# Load the dataset from the feather file
+data = pd.read_feather("/Users/seggewa/Desktop/Trim/1hrTRIM2024-09-28_11-05-23_SV1.predictions.feather")
+
+# Filter data for frames 1 to 10
+filtered_data = data[(data['frame'] >= 1) & (data['frame'] <= 3)]
+
+# Select the relevant columns for DBSCAN (tail coordinates)
+coordinates = filtered_data[['track_id', 'frame', 'x_head', 'y_head', 'x_tail', 'y_tail']]
+
+# Drop rows with missing values in x_tail or y_tail
+coordinates = coordinates.dropna(subset=['x_head', 'y_head', 'x_tail', 'y_tail'])
+
+# Calculate vectors for each instance (tail - head)
+coordinates['vector_x'] = coordinates['x_tail'] - coordinates['x_head']
+coordinates['vector_y'] = coordinates['y_tail'] - coordinates['y_head']
+
+# Define the custom distance function
+def custom_distance(A, B, alpha=0.8):
+     # Euclidean distance component (based on vector magnitudes)
+    magnitude_A = np.linalg.norm(A)
+    magnitude_B = np.linalg.norm(B)
+    euclidean_dist = np.abs(magnitude_A - magnitude_B)
+    
+    # Dot product similarity component (based on vector directions)
+    cos_similarity = np.dot(A, B) / (magnitude_A * magnitude_B)
+    angle_dist = 1 - cos_similarity  # This gives a measure of angular dissimilarity
+    
+    # Combine both with weighting
+    return alpha * euclidean_dist + (1 - alpha) * angle_dist
+clustering_results = []
+
+# Directory to save the plots
+output_dir = "/Users/seggewa/Desktop/Trim/customDBSCAN_plots"
+os.makedirs(output_dir, exist_ok=True)
+
+# Loop through each frame for separate clustering and plotting
+for frame, group in coordinates.groupby('frame'):
+    # Extract the tail coordinates for the frame
+    vectors = group[['vector_x', 'vector_y']].values  # Convert to a NumPy array for compatibility
+    
+    # Apply DBSCAN with the custom metric
+    dbscan = DBSCAN(eps=50, min_samples=2, metric=lambda A, B: custom_distance(A, B, alpha=0.8))
+    labels = dbscan.fit_predict(vectors)
+    
+    # Add clustering results to the group data
+    group['cluster'] = labels
+    
+    # Append the labeled data for this frame to the main list
+    clustering_results.append(group)
+    
+    # Plot the results for the current frame
+    plt.figure(figsize=(8, 6))
+    sns.scatterplot(x=group['x_tail'], y=group['y_tail'], hue=group['cluster'], palette='viridis', s=50)
+    plt.title(f'Frame {frame} - customDBSCAN Clustering')
+    plt.xlabel('x_tail')
+    plt.ylabel('y_tail')
+    
+    # Save the plot
+    plot_path = os.path.join(output_dir, f'frame_{frame}_dbscan.png')
+    plt.savefig(plot_path)
+    plt.close()
+
+# Concatenate all frame clustering results into a single DataFrame
+result_df = pd.concat(clustering_results, ignore_index=True)
+
+# Save clustering results to CSV
+result_df.to_csv("/Users/seggewa/Desktop/Trim/customDBSCAN1eps50Alpha.8.csv", index=False)
+print("Clustering results and plots saved.")
