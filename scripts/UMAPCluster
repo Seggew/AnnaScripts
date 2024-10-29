@@ -1,0 +1,27 @@
+import pandas as pd
+from umap import UMAP
+from sklearn.preprocessing import StandardScaler
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+data = pd.read_feather("/Users/seggewa/Desktop/cluster/1hrTRIM2024-08-29_14-01-33_SV2.tracks.feather")
+filtered_data = data[(data['frame'] >= 1) & (data['frame'] <= 3)]
+# Step 1: Select relevant columns for UMAP (excluding 'track_id' and 'frame')
+features = data[['x_tail', 'y_tail']]
+features = features.dropna()
+
+# Step 3: Apply UMAP to reduce dimensions to 2D for visualization
+umap = UMAP(n_neighbors=15, min_dist=0.1, n_components=2, random_state=42)
+embedding = umap.fit_transform(features)
+
+# Step 4: Convert the UMAP result to a DataFrame for easy plotting
+umap_df = pd.DataFrame(embedding, columns=['UMAP_1', 'UMAP_2'])
+umap_df['track_id'] = data['track_id']  # Retain 'track_id' if you want to use it for coloring or further analysis
+
+# Plot with Seaborn
+plt.figure(figsize=(10, 8))
+sns.scatterplot(data=umap_df, x='UMAP_1', y='UMAP_2', hue='track_id', palette='viridis', s=40, legend=None)
+plt.title("UMAP projection of larva tracking data")
+plt.xlabel("UMAP Dimension 1")
+plt.ylabel("UMAP Dimension 2")
+plt.show()
