@@ -1,0 +1,15 @@
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+
+grid_search_results = pd.read_csv('/Users/seggewa/Desktop/gridsearch/TESTgrid_search_resultsSVLOW.csv')
+heatmap_data = grid_search_results.pivot(index="eps", columns="cosine_threshold", values="ari_score")
+
+# Plot the heatmap
+plt.figure(figsize=(10, 8))
+sns.heatmap(heatmap_data, annot=True, cmap="viridis", fmt=".3f")
+plt.title("ARI Scores for Different DBSCAN Parameters")
+plt.xlabel("Cosine Similarity Threshold")
+plt.ylabel("Eps")
+plt.savefig('plots/SORTEDGridsearchEPSvsCosineFrame1.1hrTRIM2024-08-29_14-01-33_SV2.png', bbox_inches='tight', dpi=300)
