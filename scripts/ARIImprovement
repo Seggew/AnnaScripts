@@ -1,0 +1,105 @@
+import pandas as pd
+import numpy as np
+from sklearn.cluster import DBSCAN
+from sklearn.metrics import adjusted_rand_score
+from sklearn.model_selection import ParameterGrid
+
+# Load your ground truth and data
+data = pd.read_feather("/Users/seggewa/Desktop/cluster/1hrTRIM2024-08-29_14-01-33_SV2.tracks.feather")  # Load the data file
+ground_truth = pd.read_csv("/Users/seggewa/Desktop/gridsearch/gtLOWS2.csv")  # Load the ground truth file
+
+# Make sure both data and ground truth have a 'frame' and 'cluster' column for comparison
+data['frame'] = data['frame'].astype(int)
+ground_truth['frame'] = ground_truth['frame'].astype(int)
+
+# Filter data for frame 1 only
+filtered_data = data[(data['frame'] == 1)]
+filtered_data = filtered_data.dropna(subset=['x_head', 'y_head', 'x_tail', 'y_tail'])
+
+# Calculate vectors (tail - head) for each instance
+filtered_data['vector_x'] = filtered_data['x_tail'] - filtered_data['x_head']
+filtered_data['vector_y'] = filtered_data['y_tail'] - filtered_data['y_head']
+
+# Define custom distance function with eps and cosine similarity threshold
+def custom_distance(A, B, eps, cosine_threshold):
+    tail_A = A[:2]
+    tail_B = B[:2]
+    euclidean_tail_dist = np.linalg.norm(tail_A - tail_B)
+    
+    vector_A = A[2:]
+    vector_B = B[2:]
+    magnitude_A = np.linalg.norm(vector_A)
+    magnitude_B = np.linalg.norm(vector_B)
+    
+    if magnitude_A == 0 or magnitude_B == 0:
+        return 1000  # Treat zero-magnitude vectors as far apart
+    
+    cos_similarity = np.dot(vector_A, vector_B) / (magnitude_A * magnitude_B)
+    
+    if euclidean_tail_dist <= eps and cos_similarity > cosine_threshold:
+        return euclidean_tail_dist
+    return 1000  # Large distance if either condition fails
+
+# Define parameter grid for eps and cosine similarity threshold
+param_grid = {
+    'eps': [25, 30, 35, 40, 45, 50, 55, 60],  # Adjust eps values as needed
+    'cosine_threshold': [0.4, 0.5, 0.6, 0.7, 0.75, 0.8, 0.866, 0.9]  # Cosine values for angles of 60, 45, 30, and closer
+}
+
+# Initialize a list to store ARI scores and parameter results
+grid_search_results = []
+
+# Loop through each frame for grid search
+for frame, group in filtered_data.groupby('frame'):
+    gt_clusters = ground_truth[ground_truth['frame'] == frame]['cluster'].values
+    
+    vectors = group[['x_tail', 'y_tail', 'vector_x', 'vector_y']].values
+    
+    for params in ParameterGrid(param_grid):
+        dbscan = DBSCAN(eps=params['eps'], min_samples=3, metric=lambda A, B: custom_distance(A, B, params['eps'], params['cosine_threshold']))
+        labels = dbscan.fit_predict(vectors)
+        
+        ari_score = adjusted_rand_score(gt_clusters, labels)
+        
+        grid_search_results.append({
+            'frame': frame,
+            'eps': params['eps'],
+            'cosine_threshold': params['cosine_threshold'],
+            'ari_score': ari_score
+        })
+
+# Convert results to a DataFrame and identify best and worst parameters
+results_df = pd.DataFrame(grid_search_results)
+best_params = results_df.loc[results_df['ari_score'].idxmax()]
+worst_params = results_df.loc[results_df['ari_score'].idxmin()]
+print("Best parameters:", best_params)
+print("Worst parameters:", worst_params)
+
+# Save the grid search results to a CSV for analysis
+results_df.to_csv('/Users/seggewa/Desktop/gridsearch/TESTgrid_search_resultsSVLOW.csv', index=False)
+print("Grid search results saved.")
+
+# Function to apply DBSCAN with specified parameters, select specific columns, and save results
+def run_dbscan_and_save(group, params, output_path):
+    vectors = group[['x_tail', 'y_tail', 'vector_x', 'vector_y']].values
+    dbscan = DBSCAN(eps=params['eps'], min_samples=3, metric=lambda A, B: custom_distance(A, B, params['eps'], params['cosine_threshold']))
+    labels = dbscan.fit_predict(vectors)
+    group['cluster'] = labels
+    
+    # Select only the specified columns
+    selected_columns = ['track_id', 'frame', 'x_head', 'y_head', 'x_tail', 'y_tail', 'vector_x', 'vector_y', 'cluster']
+    group = group[selected_columns]
+    
+    # Sort by track_id in ascending order before saving
+    group = group.sort_values(by='track_id')
+    
+    group.to_csv(output_path, index=False)
+    print(f"Results saved to {output_path}")
+
+# Run DBSCAN with the best parameters and save to CSV
+best_output_path = '/Users/seggewa/Desktop/gridsearch/TESTbest_performance.csv'
+run_dbscan_and_save(filtered_data, best_params, best_output_path)
+
+# Run DBSCAN with the worst parameters and save to CSV
+worst_output_path = '/Users/seggewa/Desktop/gridsearch/TESTworst_performance.csv'
+run_dbscan_and_save(filtered_data, worst_params, worst_output_path)
