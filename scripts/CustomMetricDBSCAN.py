@@ -9,7 +9,7 @@ import numpy as np
 data = pd.read_feather("/Users/seggewa/Desktop/cluster/1hrTRIM2024-08-29_14-01-33_SV2.tracks.feather")
 
 # Filter data for frames 1 to 3
-filtered_data = data[(data['frame'] >= 1) & (data['frame'] <= 1)]
+filtered_data = data[(data['frame'] % 10 == 0)]
 
 # Select the relevant columns for DBSCAN (head and tail coordinates)
 coordinates = filtered_data[['track_id', 'frame', 'x_head', 'y_head', 'x_tail', 'y_tail']]
@@ -88,5 +88,5 @@ for frame, group in coordinates.groupby('frame'):
 result_df = pd.concat(clustering_results, ignore_index=True)
 
 # Save clustering results to CSV
-result_df.to_csv("/Users/seggewa/Desktop/gridsearch/ExperimentN.csv", index=False)
+result_df.to_csv("CustomDBSCANeps=45-cos=.9.csv", index=False)
 print("Clustering results and plots saved.")
