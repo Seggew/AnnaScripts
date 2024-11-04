@@ -3,7 +3,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 
-grid_search_results = pd.read_csv('/Users/seggewa/Desktop/gridsearch/TESTgrid_search_resultsSVLOW.csv')
+grid_search_results = pd.read_csv('/Users/seggewa/Desktop/gridsearch/TESTgrid_search_resultsSV1LOW.csv')
 heatmap_data = grid_search_results.pivot(index="eps", columns="cosine_threshold", values="ari_score")
 
 # Plot the heatmap
