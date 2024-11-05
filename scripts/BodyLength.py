@@ -7,7 +7,7 @@ def euclidean_distance(x1, y1, x2, y2):
     return np.sqrt((x2 - x1)**2 + (y2 - y1)**2)
 
 # Folder path containing Feather files (replace with your folder path)
-folder_path = '/Users/seggewa/Desktop/Length/isolated'
+folder_path = '/Users/seggewa/Desktop/Length100000/isolated'
 
 # List to store results
 results = []
@@ -22,7 +22,7 @@ for filename in os.listdir(folder_path):
         df = pd.read_feather(file_path)
         
         # Filter for rows where frame == 100
-        df_filtered = df[df['frame'] == 100000]
+        df_filtered = df[df['frame'] == 400000]
 
         # Calculate Euclidean distances and sum them for each larva
         df_filtered['body_length'] = (
@@ -44,7 +44,7 @@ for filename in os.listdir(folder_path):
 results_df = pd.DataFrame(results)
 
 # Save the results to a CSV file in the same folder
-output_path = os.path.join(folder_path, 'larva_body_lengths.csv')
+output_path = os.path.join(folder_path, '400klarva_body_lengths.csv')
 results_df.to_csv(output_path, index=False)
 
 print(f"Results saved to '{output_path}'")
