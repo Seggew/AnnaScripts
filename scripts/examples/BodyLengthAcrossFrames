@@ -1,0 +1,77 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy.stats import ttest_ind
+from datetime import datetime
+import itertools
+
+date = datetime.today().strftime('%Y-%m-%d')
+
+# Paths to the CSV files
+csv_files = [
+    '/Users/seggewa/repos/AnnaScripts/data/Bodylength/Length100000/1combined_larva_data.csv',
+    '/Users/seggewa/repos/AnnaScripts/data/Bodylength/Length100000/100kcombined_larva_data.csv',
+    '/Users/seggewa/repos/AnnaScripts/data/Bodylength/Length100000/200kcombined_larva_data.csv',
+    '/Users/seggewa/repos/AnnaScripts/data/Bodylength/Length100000/300kcombined_larva_data.csv',
+    '/Users/seggewa/repos/AnnaScripts/data/Bodylength/Length100000/400kcombined_larva_data.csv'
+]
+
+# Load and label each DataFrame
+dfs = []
+labels = ['Frame1', 'Frame100k', 'Frame200k', 'Frame300k', 'Frame400k']
+
+for csv_file, label in zip(csv_files, labels):
+    df = pd.read_csv(csv_file)
+    df['dataset'] = label  # Add a column to identify the dataset (frame)
+    dfs.append(df)
+
+# Concatenate all DataFrames
+combined_df = pd.concat(dfs)
+
+# Sort the combined data by 'dataset' (frame) and 'condition'
+combined_df = combined_df.sort_values(by=['dataset', 'condition'])
+
+# Group by both 'dataset' (frame) and 'condition' to get means and standard errors
+grouped = combined_df.groupby(['dataset', 'condition'])['body_length']
+average_body_length = grouped.mean().unstack()  # Unstack to create columns for each condition
+std_error = grouped.sem().unstack()
+
+# Perform pairwise t-tests between conditions within each dataset
+p_values = {}
+
+for dataset in labels:
+    dataset_df = combined_df[combined_df['dataset'] == dataset]
+    conditions = dataset_df['condition'].unique()
+    for cond1, cond2 in itertools.combinations(conditions, 2):
+        data1 = dataset_df[dataset_df['condition'] == cond1]['body_length']
+        data2 = dataset_df[dataset_df['condition'] == cond2]['body_length']
+        t_stat, p_value = ttest_ind(data1, data2)
+        p_values[(dataset, cond1, cond2)] = p_value
+
+# Plot the results
+fig, ax = plt.subplots(figsize=(12, 8))
+average_body_length.plot(kind='bar', yerr=std_error, capsize=5, ax=ax, position=0.8)
+
+# Customize plot appearance
+ax.set_ylabel('Average Body Length')
+ax.set_xlabel('Frame')
+ax.set_title('Average Body Length per Condition across Frames')
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+plt.xticks(rotation=45)
+
+# Add significance stars
+for (dataset, cond1, cond2), p_value in p_values.items():
+    if p_value < 0.05:
+        pos1 = labels.index(dataset)
+        # Positions for conditions within each frame group
+        x1 = pos1 - 0.15 if cond1 < cond2 else pos1 + 0.15
+        y_max = max(average_body_length.loc[dataset, [cond1, cond2]].values) + 0.05
+        
+        # Draw horizontal line and add star
+        plt.plot([x1, x1 + 0.3], [y_max, y_max], color='black')
+        plt.text(x1 + 0.15, y_max, '*', ha='center', va='bottom', color='black')
+
+plt.tight_layout()
+plt.savefig(f'plots/{date}_Grouped_BodyLength.png', bbox_inches='tight', dpi=300)
+#plt.show()

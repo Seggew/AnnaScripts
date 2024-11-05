@@ -3,15 +3,19 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.stats import ttest_ind
 from datetime import datetime
+from natsort import natsorted
 import itertools
 
 date = datetime.today().strftime('%Y-%m-%d')
 
 # Path to the combined CSV file
-csv_file = 'data/Bodylength/combined_larva_data.csv'
+csv_file = '/Users/seggewa/Desktop/Length100000/400kcombined_larva_data.csv'
 
 # Load the combined CSV file into a DataFrame
 df = pd.read_csv(csv_file)
+
+#sort the data numerically
+data_sorted = df.loc[natsorted(df.index, key=lambda x: df['condition'][x])] 
 
 # Group by 'condition' and calculate the mean and standard error of 'body_length'
 grouped = df.groupby('condition')['body_length']
@@ -31,7 +35,7 @@ for cond1, cond2 in itertools.combinations(conditions, 2):
 
 # Create a bar plot with error bars and set the bar color
 plt.figure(figsize=(10, 6))
-bars = average_body_length.plot(kind='bar', yerr=std_error, capsize=5, color='#30694F')
+bars = average_body_length.plot(kind='bar', yerr=std_error, capsize=5, color='#B8CCC3')
 
 # Remove the top and right spines (black lines around the plot)
 ax = plt.gca()  # Get the current axis
@@ -66,5 +70,5 @@ for (cond1, cond2), p_value in p_values.items():
 
 # Show the plot
 plt.tight_layout()
-plt.savefig(f'plots/{date}_BodyLengthMainCond.png', bbox_inches='tight', dpi=300)
-#plt.show()
+#plt.savefig(f'plots/{date}_Sorted-400kBodyLengthMainCond.png', bbox_inches='tight', dpi=300)
+plt.show()
