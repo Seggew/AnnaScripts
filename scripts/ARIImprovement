@@ -16,6 +16,8 @@ ground_truth['frame'] = ground_truth['frame'].astype(int)
 filtered_data = data[(data['frame'] == 1)]
 filtered_data = filtered_data.dropna(subset=['x_head', 'y_head', 'x_tail', 'y_tail'])
 
+filtered_data = filtered_data.sort_values(by='track_id')
+
 # Calculate vectors (tail - head) for each instance
 filtered_data['vector_x'] = filtered_data['x_tail'] - filtered_data['x_head']
 filtered_data['vector_y'] = filtered_data['y_tail'] - filtered_data['y_head']
@@ -76,7 +78,7 @@ print("Best parameters:", best_params)
 print("Worst parameters:", worst_params)
 
 # Save the grid search results to a CSV for analysis
-results_df.to_csv('/Users/seggewa/Desktop/gridsearch/TESTgrid_search_resultsSVLOW.csv', index=False)
+results_df.to_csv('/Users/seggewa/Desktop/gridsearch/SORTEDgrid_search_resultsSVLOW.csv', index=False)
 print("Grid search results saved.")
 
 # Function to apply DBSCAN with specified parameters, select specific columns, and save results
@@ -97,9 +99,9 @@ def run_dbscan_and_save(group, params, output_path):
     print(f"Results saved to {output_path}")
 
 # Run DBSCAN with the best parameters and save to CSV
-best_output_path = '/Users/seggewa/Desktop/gridsearch/TESTbest_performance.csv'
+best_output_path = '/Users/seggewa/Desktop/gridsearch/SORTTESTbest_performance.csv'
 run_dbscan_and_save(filtered_data, best_params, best_output_path)
 
 # Run DBSCAN with the worst parameters and save to CSV
-worst_output_path = '/Users/seggewa/Desktop/gridsearch/TESTworst_performance.csv'
+worst_output_path = '/Users/seggewa/Desktop/gridsearch/SORTTESTworst_performance.csv'
 run_dbscan_and_save(filtered_data, worst_params, worst_output_path)
