@@ -8,7 +8,7 @@ import os
 data = pd.read_feather("/Users/seggewa/Desktop/cluster/1hrTRIM2024-08-29_14-01-33_SV2.tracks.feather")
 
 # Filter data for frames 1 to 10
-filtered_data = data[(data['frame'] >= 1) & (data['frame'] <= 10)]
+filtered_data = data[(data['frame'] >= 1) & (data['frame'] <= 1)]
 
 # Select the relevant columns for DBSCAN (tail coordinates)
 coordinates = filtered_data[['track_id', 'frame', 'x_tail', 'y_tail']]
@@ -20,7 +20,7 @@ coordinates = coordinates.dropna(subset=['x_tail', 'y_tail'])
 clustering_results = []
 
 # Directory to save the plots
-output_dir = "/Users/seggewa/Desktop/cluster/DBSCAN_plots"
+output_dir = "/Users/seggewa/Desktop/trim/DBSCAN_plots"
 os.makedirs(output_dir, exist_ok=True)
 
 # Loop through each frame for separate clustering and plotting
@@ -29,7 +29,7 @@ for frame, group in coordinates.groupby('frame'):
     tail_coords = group[['x_tail', 'y_tail']]
     
     # Apply DBSCAN on tail coordinates
-    dbscan = DBSCAN(eps=60, min_samples=2)  # Adjust eps and min_samples as needed
+    dbscan = DBSCAN(eps=45, min_samples=2)  # Adjust eps and min_samples as needed
     labels = dbscan.fit_predict(tail_coords)
     
     # Add clustering results to the group data
@@ -43,5 +43,5 @@ for frame, group in coordinates.groupby('frame'):
 result_df = pd.concat(clustering_results, ignore_index=True)
 
 # Save clustering results to CSV
-result_df.to_csv("/Users/seggewa/Desktop/cluster/DBSCAN1-10-eps60.csv", index=False)
+result_df.to_csv("/Users/seggewa/Desktop/gridsearch/UglyExample.csv", index=False)
 print("Clustering results and plots saved.")
