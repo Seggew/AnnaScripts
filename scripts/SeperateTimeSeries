@@ -1,0 +1,62 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Load the CSV file
+data_file_path = '/Users/seggewa/Desktop/Combined_clustersDBSCAN.csv'  # Replace with actual file path
+df = pd.read_csv(data_file_path)
+
+# Step 1: Check if `origin_file` exists, and add it if missing
+if 'origin_file' not in df.columns:
+    print("Warning: `origin_file` column not found. Adding a placeholder.")
+    df['origin_file'] = 'file1'  # Assign a placeholder value for testing
+
+# Step 2: Print how many different `origin_file`s exist per condition
+origin_file_counts = df.groupby('condition')['origin_file'].nunique()
+print("\nNumber of unique `origin_file`s per condition:")
+print(origin_file_counts)
+
+# Step 3: Filter for the `150eggs` condition
+df = df[df['condition'] == '150eggs']
+
+# Step 4: Add a binary column to indicate if a track_id is in a cluster
+df['in_cluster'] = (df['cluster'] > -1).astype(int)
+
+# Step 5: Calculate fractions for each `origin_file` and frame
+def calculate_fraction(group):
+    # Group by frame and calculate the fraction of track_id's in clusters
+    frame_fractions = group.groupby('frame').apply(
+        lambda x: x['in_cluster'].sum() / len(x)  # Fraction in clusters
+    ).reset_index(name='fraction')
+    frame_fractions['origin_file'] = group['origin_file'].iloc[0]  # Add the origin_file to the fraction DataFrame
+    return frame_fractions
+
+# Group by `origin_file` and calculate fractions
+fractions_by_origin = df.groupby('origin_file', group_keys=False).apply(calculate_fraction)
+
+# Debug: Check if `origin_file` exists in `fractions_by_origin`
+print("Columns in `fractions_by_origin`:", fractions_by_origin.columns)
+
+# Step 6: Plot the results
+plt.figure(figsize=(12, 8))
+
+sns.lineplot(
+    data=fractions_by_origin,
+    x='frame',
+    y='fraction',
+    hue='origin_file',
+    linewidth=2,
+    palette='tab10'
+)
+
+# Customize the plot
+plt.xlabel('Frame', fontsize=14)
+plt.ylabel('Fraction of Track IDs in Clusters', fontsize=14)
+plt.title('Fraction of Track IDs in Clusters for 150eggs by Origin File', fontsize=16)
+plt.legend(title='Origin File', fontsize=10, loc='upper right')
+plt.grid(True, linestyle='--', alpha=0.5)
+
+# Ensure all frames (up to 400,000) are included
+plt.xlim(0, 400000)
+
+plt.show()
