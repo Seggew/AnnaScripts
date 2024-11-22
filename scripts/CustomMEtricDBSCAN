@@ -6,10 +6,10 @@ import os
 import numpy as np
 
 # Load the dataset from the feather file
-data = pd.read_feather("/Users/seggewa/Desktop/cluster/1hrTRIM2024-08-29_14-01-33_SV2.tracks.feather")
+data = pd.read_feather("/Users/seggewa/Desktop/ExtractFrames/2024-09-07_15-17-23_SV10.predictions.feather")
 
 # Filter data for frames 1 to 3
-filtered_data = data[(data['frame'] >= 1) & (data['frame'] <= 1)]
+filtered_data = data[(data['frame'] >= 71567) & (data['frame'] <= 71567)]
 
 # Select the relevant columns for DBSCAN (head and tail coordinates)
 coordinates = filtered_data[['track_id', 'frame', 'x_head', 'y_head', 'x_tail', 'y_tail']]
@@ -54,31 +54,31 @@ def custom_distance(A, B):
 clustering_results = []
 
 # Directory to save the plots
-output_dir = "/Users/seggewa/Desktop/gridsearch/EXPERIMENT"
+output_dir = "/Users/seggewa/Desktop/ExtractFrames"
 os.makedirs(output_dir, exist_ok=True)
 
 # Loop through each frame for separate clustering and plotting
 for frame, group in coordinates.groupby('frame'):
     # Prepare data for custom metric with [x_tail, y_tail, vector_x, vector_y]
     data_for_clustering = group[['x_tail', 'y_tail', 'vector_x', 'vector_y']].values
-    
+
     # Apply DBSCAN with the custom metric
     dbscan = DBSCAN(eps=45, min_samples=3, metric=lambda A, B: custom_distance(A, B))
     labels = dbscan.fit_predict(data_for_clustering)
-    
+
     # Add clustering results to the group data
     group['cluster'] = labels
-    
+
     # Append the labeled data for this frame to the main list
     clustering_results.append(group)
-    
+
     # Plot the results for the current frame
     plt.figure(figsize=(8, 6))
     sns.scatterplot(x=group['x_tail'], y=group['y_tail'], hue=group['cluster'], palette='viridis', s=50)
     plt.title(f'Frame {frame} - customDBSCAN Clustering')
     plt.xlabel('x_tail')
     plt.ylabel('y_tail')
-    
+
     # Save the plot
     plot_path = os.path.join(output_dir, f'frame_{frame}_dbscan.png')
     plt.savefig(plot_path)
@@ -88,5 +88,5 @@ for frame, group in coordinates.groupby('frame'):
 result_df = pd.concat(clustering_results, ignore_index=True)
 
 # Save clustering results to CSV
-result_df.to_csv("/Users/seggewa/Desktop/gridsearch/ExperimentN.csv", index=False)
+result_df.to_csv("/Users/seggewa/Desktop/ExtractFrames/45.9-2024-09-07_15-17-23_SV10.csv", index=False)
 print("Clustering results and plots saved.")
