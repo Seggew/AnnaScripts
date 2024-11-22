@@ -36,42 +36,28 @@ grouped = combined_df.groupby(['dataset', 'condition'])['body_length']
 average_body_length = grouped.mean().unstack()  # Unstack to create columns for each condition
 std_error = grouped.sem().unstack()
 
-# Perform pairwise t-tests between conditions within each dataset
-p_values = {}
-
-for dataset in labels:
-    dataset_df = combined_df[combined_df['dataset'] == dataset]
-    conditions = dataset_df['condition'].unique()
-    for cond1, cond2 in itertools.combinations(conditions, 2):
-        data1 = dataset_df[dataset_df['condition'] == cond1]['body_length']
-        data2 = dataset_df[dataset_df['condition'] == cond2]['body_length']
-        t_stat, p_value = ttest_ind(data1, data2)
-        p_values[(dataset, cond1, cond2)] = p_value
-
 # Plot the results
-fig, ax = plt.subplots(figsize=(12, 8))
-average_body_length.plot(kind='bar', yerr=std_error, capsize=5, ax=ax, position=0.8)
+plt.figure(figsize=(12, 8))
+
+# Plot each condition as a separate line
+for condition in average_body_length.columns:
+    plt.errorbar(
+        labels, 
+        average_body_length[condition], 
+        yerr=std_error[condition], 
+        label=f'Condition {condition}', 
+        marker='o', 
+        capsize=5
+    )
 
 # Customize plot appearance
-ax.set_ylabel('Average Body Length')
-ax.set_xlabel('Frame')
-ax.set_title('Average Body Length per Condition across Frames')
-ax.spines['top'].set_visible(False)
-ax.spines['right'].set_visible(False)
+plt.ylabel('Average Body Length')
+plt.xlabel('Frame')
+plt.title('Average Body Length Development Across Frames for Each Condition')
 plt.xticks(rotation=45)
-
-# Add significance stars
-for (dataset, cond1, cond2), p_value in p_values.items():
-    if p_value < 0.05:
-        pos1 = labels.index(dataset)
-        # Positions for conditions within each frame group
-        x1 = pos1 - 0.15 if cond1 < cond2 else pos1 + 0.15
-        y_max = max(average_body_length.loc[dataset, [cond1, cond2]].values) + 0.05
-        
-        # Draw horizontal line and add star
-        plt.plot([x1, x1 + 0.3], [y_max, y_max], color='black')
-        plt.text(x1 + 0.15, y_max, '*', ha='center', va='bottom', color='black')
+plt.legend(title='Condition')
+plt.grid(axis='y', linestyle='--', alpha=0.7)
 
 plt.tight_layout()
-plt.savefig(f'plots/{date}_Grouped_BodyLength.png', bbox_inches='tight', dpi=300)
-#plt.show()
+# plt.savefig(f'plots/{date}_BodyLength_Development_Across_Frames.png', bbox_inches='tight', dpi=300)
+plt.show()
