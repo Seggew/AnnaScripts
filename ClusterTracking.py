@@ -23,7 +23,7 @@ centroids['x'] = (centroids['x_head'] + centroids['x_tail']) / 2
 centroids['y'] = (centroids['y_head'] + centroids['y_tail']) / 2
 
 
-track_data = centroids[['origin_file', 'frame', 'x', 'y', 'cluster', 'condition', 'clustering_path']].copy()
+track_data = centroids[['origin_file', 'frame', 'x', 'y', 'cluster', 'x_head', 'y_head', 'x_tail', 'y_tail', 'condition', 'clustering_path']].copy()
 
 all_tracked = []
 for origin, group in track_data.groupby('origin_file'):

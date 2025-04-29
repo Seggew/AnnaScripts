@@ -3,8 +3,8 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 
-grid_search_results = pd.read_csv('/Users/seggewa/Desktop/done/50x50ARI_16statistics.csv')
-heatmap_data = grid_search_results.pivot(index="eps", columns="cosine_threshold", values="average_ari_score")
+grid_search_results = pd.read_csv('/Users/seggewa/Desktop/done/NiceClusterOnly50x50ARI_16statistics.csv')
+heatmap_data = grid_search_results.pivot(index="eps", columns="cosine_threshold", values="median_ari_score")
 
 # Plot the heatmap
 plt.figure(figsize=(10, 8))

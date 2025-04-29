@@ -44,8 +44,8 @@ valid_identifiers = set(ground_truth_files.keys()) & set(feather_files.keys()) &
 
 # Define parameter grid for eps and cosine similarity threshold
 param_grid = {
-    'eps': np.round(np.linspace(10, 100, 50), 2),  # 50 values for eps between 10 and 100, rounded to 2 decimals
-    'cosine_threshold': np.round(np.linspace(0, 1, 50), 2)  # 50 values for cosine_threshold between 0 and 1, rounded to 2 decimals
+    'eps': np.round(np.linspace(10, 100, 200), 2),  # 50 values for eps between 10 and 100, rounded to 2 decimals
+    'cosine_threshold': np.round(np.linspace(0, 1, 200), 2)  # 50 values for cosine_threshold between 0 and 1, rounded to 2 decimals
 }
 
 # Initialize a list to store ARI scores and parameter results
@@ -131,5 +131,5 @@ for params in ParameterGrid(param_grid):
 results_df = pd.DataFrame(grid_search_results)
 
 # Save the grid search results to a CSV for analysis
-results_df.to_csv('/Users/seggewa/Desktop/done/50x50ARI_16statistics.csv', index=False)
+results_df.to_csv('/Users/seggewa/Desktop/done/NiceClusterOnly100x100ARI_16statistics.csv', index=False)
 print("Grid search results saved.")

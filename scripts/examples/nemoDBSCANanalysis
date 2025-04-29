@@ -1,0 +1,47 @@
+import os
+import pandas as pd
+
+# Define the main directory where the subfolders are located
+main_dir = os.getcwd()  # Replace with your actual directory path
+output_csv = os.path.join(main_dir, "combined_clustersDBSCAN.csv")
+
+subfolders_to_process = ["50eggs", "100eggs", "150eggs", "200eggs"] 
+
+# Initialize an empty list to store data from each file
+all_data = []
+
+# Iterate over each subfolder in the main directory
+for subfolder in os.listdir(main_dir):
+    subfolder_path = os.path.join(main_dir, subfolder)
+    
+    # Ensure we are only processing directories
+    if os.path.isdir(subfolder_path) and subfolder in subfolders_to_process:
+        
+        # Path to DBSCANarray subfolder
+        dbscan_folder = os.path.join(subfolder_path, "DBSCANarray")
+        
+        # Ensure DBSCANarray exists in this subfolder
+        if os.path.exists(dbscan_folder):
+            
+            # Iterate over each CSV file in DBSCANarray
+            for csv_file in os.listdir(dbscan_folder):
+                if csv_file.endswith(".csv"):
+                    csv_path = os.path.join(dbscan_folder, csv_file)
+                    
+                    # Read the CSV file
+                    df = pd.read_csv(csv_path)
+                    
+                    # Add columns for 'condition' and 'origin_file'
+                    df['condition'] = subfolder
+                    df['origin_file'] = csv_file
+                    
+                    # Append this data to the list
+                    all_data.append(df)
+
+# Combine all data into a single DataFrame
+combined_df = pd.concat(all_data, ignore_index=True)
+
+# Save the combined DataFrame to a CSV file
+combined_df.to_csv(output_csv, index=False)
+
+print(f"Combined CSV created successfully at {output_csv}")
