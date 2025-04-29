@@ -16,6 +16,26 @@ for frame in Keydata['frame'].unique():
         y='y',
         hue='cluster',
         s=60
+
+        # Plot head position
+    plt.scatter(
+        frame_data['x_head'],
+        frame_data['y_head'],
+        color='red',
+        s=30,
+        marker='^',
+        label='head'
+    )
+
+    # Plot tail position
+    plt.scatter(
+        frame_data['x_tail'],
+        frame_data['y_tail'],
+        color='blue',
+        s=30,
+        marker='v',
+        label='tail'
+    )
     )
     plt.xlim(0, 1800)
     plt.ylim(1100, 0)
