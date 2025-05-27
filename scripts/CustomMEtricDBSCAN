@@ -9,7 +9,7 @@ import numpy as np
 data = pd.read_feather("/Users/seggewa/Desktop/ExtractFrames/2024-09-07_15-17-23_SV10.predictions.feather")
 
 # Filter data for frames 1 to 3
-filtered_data = data[(data['frame'] >= 71567) & (data['frame'] <= 71567)]
+#filtered_data = data[(data['frame'] >= 71567) & (data['frame'] <= 71567)]
 
 # Select the relevant columns for DBSCAN (head and tail coordinates)
 coordinates = filtered_data[['track_id', 'frame', 'x_head', 'y_head', 'x_tail', 'y_tail']]
@@ -66,10 +66,7 @@ for frame, group in coordinates.groupby('frame'):
     dbscan = DBSCAN(eps=45, min_samples=3, metric=lambda A, B: custom_distance(A, B))
     labels = dbscan.fit_predict(data_for_clustering)
 
-    # Add clustering results to the group data
     group['cluster'] = labels
-
-    # Append the labeled data for this frame to the main list
     clustering_results.append(group)
 
     # Plot the results for the current frame
