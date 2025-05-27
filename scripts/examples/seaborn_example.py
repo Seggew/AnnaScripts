@@ -6,7 +6,7 @@ import seaborn as sns
 from natsort import natsorted
 
 # Load the master CSV file
-master_csv_path = '/Users/seggewa/Desktop/Combined_clustersDBSCAN.csv'
+master_csv_path = '/Users/seggewa/Desktop/combined_data.csv'
 data = pd.read_csv(master_csv_path)
 
 # natural sorting (prevent 100, 150, 50 situations)
@@ -19,6 +19,6 @@ sns.barplot(x=data_sorted.condition, y=data_sorted.cluster, errorbar='sd', color
 plt.xticks(rotation=45, ha='right')
 
 # saving the plot, make sure it is in the same cell
-plt.savefig('plots/ClusterDennis.png', bbox_inches='tight', dpi=300)
-
+#plt.savefig('plots/ClusterDennis.png', bbox_inches='tight', dpi=300)
+plt.show()
 # %%
