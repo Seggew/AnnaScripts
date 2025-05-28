@@ -3,3 +3,8 @@ plots
 flywire_password.py
 __pycache__
 .DS_Store
+*.png
+*.pdf
+TimeseriesFraction_BinnedBEFOREcontrollingHATCHING.png
+TimeseriesFraction_Unaggregated.pdf
+TimeseriesFraction_Unaggregated.png
