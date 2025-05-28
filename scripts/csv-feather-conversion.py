@@ -13,7 +13,7 @@ import numpy as np
 from sklearn.cluster import DBSCAN
 
 
-df = pd.read_csv('/Users/seggewa/Desktop/ConnectomeTracking/REVERSED-2025-03-27_18-46-40_SV1.tracks.000_REVERSED-2025-03-27_18-46-40_SV1.analysis.csv')
+df = pd.read_csv('/Users/seggewa/Desktop/ConnectomeTracking/2025-01-07_14-46-15_SV18.-hellotracksMon.000_2025-01-07_14-46-15_SV18.analysis.csv')
 
 # clear the data from any erronaeously detected tracks at the bottom of the cassette (handrwriting =/= larvae)
 invalid_tracks = df[df['tail.y'] > 450]['track'].unique()
@@ -162,21 +162,7 @@ df['track_id'] = df['track_id'].str.replace('track_', '', regex=True).astype(int
 
 #df = df.drop(columns=['displacement'])
 
-df.to_feather('/Users/seggewa/Desktop/ConnectomeTracking/REVERSED-2025-03-27_18-46-40_SV1.tracks.feather')
+df.to_feather('/Users/seggewa/Desktop/ConnectomeTracking/2025-01-07_14-46-15_SV18.tracks.feather')
 #print(df.columns)
 
 print("done")
-
-
-# %% CSV -> FEATHER AND SLP
-
-#df.to_feather('/Volumes/lab-windingm/home/users/cochral/AttractionRig/Videos/socially-isolated/N10/FOOD/feather.feather')
-
-
-
-
-
-
-
-
-#############################################################
